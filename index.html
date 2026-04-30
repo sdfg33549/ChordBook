@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChordBook 專業排版工具</title>
+    <title>ChordBook</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -215,7 +215,7 @@
             </div>
             <div class="flex gap-3">
                 <button @click="step = 1" class="px-6 py-2 font-bold text-slate-400 hover:text-slate-600">返回歌詞</button>
-                <button @click="step = 3" class="bg-blue-600 text-white px-8 py-2 rounded-xl font-black shadow-lg hover:bg-blue-700 transition">下一步：排版預覽</button>
+                <button @click="step = 3" class="bg-blue-600 text-white px-8 py-2 rounded-xl font-black shadow-lg hover:bg-blue-700 transition">排版預覽</button>
             </div>
         </div>
 
@@ -475,12 +475,12 @@
     <div v-if="activeEditor" class="fixed inset-0 bg-black/70 flex items-center justify-center z-[100] no-print p-4 backdrop-blur-sm">
         <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg p-8 border">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-black">標記和弦元件</h3>
+                <h3 class="text-xl font-black">請選擇和弦</h3>
                 <button @click="activeEditor = false" class="text-slate-400 hover:text-slate-800 text-2xl">✕</button>
             </div>
             <div class="space-y-6">
                 <div v-if="usedChords.length > 0" class="space-y-2">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">常用於此曲</span>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">快速標註</span>
                     <div class="flex flex-wrap gap-2">
                         <button v-for="uc in usedChords" @click="applyUsedChord(uc)" class="px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-black no-uppercase hover:bg-blue-100 transition">{{ uc }}</button>
                     </div>
