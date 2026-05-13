@@ -44,7 +44,7 @@
             display: inline-block;
         }
 
-        /* 演奏區格子優化 - 解決超出去的問題 */
+        /* 演奏區格子優化 */
         .beat-slot {
             min-width: 2.2rem;
             padding: 0 0.3rem;
@@ -75,7 +75,7 @@
         .lyrics-columns {
             display: grid;
             align-items: start;
-            gap: 0.2em 2.5em; /* 這裡調小了行距 */
+            gap: 0.2em 2.5em;
         }
 
         .break-inside-avoid {
@@ -320,7 +320,7 @@
                             lineHeight: styles.lineHeight 
                         }">
                             <div v-for="lIdx in block.lines" :key="lIdx" class="break-inside-avoid">
-                                <div v-if="isTagLine(lIdx)" class="tag-label no-uppercase py-1" style="font-size: 0.8em;">{{ processedLines[lIdx][0] }}</div>
+                                <div v-if="isTagLine(lIdx)" class="hidden"></div>
                                 <div v-else class="flex flex-wrap items-end" :style="{ paddingTop: (Math.max(0, styles.chordHeight) + 0.1) + 'em' }">
                                     <span v-for="(item, iIdx) in processedLines[lIdx]" :key="iIdx" class="chord-marker" style="height: auto;">
                                         <span class="chord-name no-uppercase" v-if="getChordAt(lIdx, iIdx)" :style="{ fontSize: styles.chordSize + 'px', top: '-' + styles.chordHeight + 'em', color: styles.chordColor }">{{ getChordAt(lIdx, iIdx).name }}</span>
@@ -375,7 +375,7 @@
                                 </div>
                                 <div class="lyrics-columns" :style="{ gridTemplateColumns: windowWidth < 768 ? '1fr' : `repeat(${styles.columns}, minmax(0, 1fr))`, rowGap: '0.2em', lineHeight: styles.lineHeight }">
                                     <div v-for="lIdx in block.lines" :key="lIdx" class="break-inside-avoid">
-                                        <div v-if="isTagLine(lIdx)" class="tag-label no-uppercase py-1" style="font-size: 0.8em;">{{ processedLines[lIdx][0] }}</div>
+                                        <div v-if="isTagLine(lIdx)" class="hidden"></div>
                                         <div v-else class="flex flex-wrap items-end" :style="{ paddingTop: (Math.max(0, styles.chordHeight) + 0.1) + 'em' }">
                                             <span v-for="(item, iIdx) in processedLines[lIdx]" :key="iIdx" class="chord-marker" style="height: auto;">
                                                 <span class="chord-name no-uppercase" v-if="getChordAt(lIdx, iIdx)" :style="{ fontSize: styles.chordSize + 'px', top: '-' + styles.chordHeight + 'em', color: styles.chordColor }">{{ getChordAt(lIdx, iIdx).name }}</span>
@@ -496,6 +496,8 @@
                 const next = (lineBeatConfig[lIdx] || 16) + delta;
                 if (next >= 4 && next <= 64) lineBeatConfig[lIdx] = next;
             };
+            
+            // 邏輯關鍵：確保 block 切割正確
             const songBlocks = computed(() => {
                 let blocks = [], currentLines = [], currentType = null;
                 processedLines.value.forEach((line, index) => {
