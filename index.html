@@ -67,7 +67,6 @@
             margin-bottom: 0.5em;
         }
 
-        /* 修改：改為 Grid 顯示模式 */
         .lyrics-columns {
             display: grid;
             align-items: start;
@@ -226,7 +225,9 @@
                     </div>
                 </div>
                 <div v-else class="flex flex-wrap items-end px-4">
-                    <span v-for="(item, iIdx) in line" :key="iIdx" @click="openChordEditor(lIdx, iIdx)" class="chord-marker group">
+                    <span v-for="(item, iIdx) in line" :key="iIdx" 
+                          @click="openChordEditor(lIdx, iIdx)" 
+                          class="chord-marker group">
                         <span class="chord-name text-blue-600 no-uppercase" v-if="getChordAt(lIdx, iIdx)" :style="{ top: '0.2rem', fontSize: '0.95em' }">{{ getChordAt(lIdx, iIdx).name }}</span>
                         <template v-if="item === '|'"><span class="bar-line group-hover:bg-blue-400"></span></template>
                         <template v-else><span class="lyric-item px-0.5 group-hover:bg-blue-50 rounded transition">{{ item === ' ' ? '&nbsp;&nbsp;' : item }}</span></template>
@@ -284,6 +285,10 @@
                             <div class="flex justify-between text-[10px] font-black mb-1">和弦文字大小 <span class="text-blue-600">{{ styles.chordSize }}px</span></div>
                             <input type="range" v-model="styles.chordSize" min="8" max="30" class="w-full accent-blue-600">
                         </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] font-black mb-1">歌詞行高 <span class="text-blue-600">{{ styles.lineHeight }}</span></div>
+                            <input type="range" v-model="styles.lineHeight" min="-1" max="4" step="0.1" class="w-full accent-blue-600">
+                        </div>
                     </div>
                 </div>
                 <div class="pt-4 border-t space-y-3">
@@ -320,13 +325,18 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-else class="lyrics-columns" :style="{ gridTemplateColumns: `repeat(${styles.columns}, minmax(0, 1fr))` }">
-                            <div v-for="lIdx in block.lines" :key="lIdx" class="break-inside-avoid" :style="{ marginBottom: (styles.lineHeight - 0.7) + 'em' }">
-                                <div class="flex flex-wrap items-end" :style="{ paddingTop: (Math.max(0, styles.chordHeight) + 0.3) + 'em' }">
+                        <div v-else class="lyrics-columns" :style="{ 
+                            gridTemplateColumns: `repeat(${styles.columns}, minmax(0, 1fr))`, 
+                            rowGap: (parseFloat(styles.lineHeight) - 1) + 'em',
+                            lineHeight: Math.max(0.5, styles.lineHeight) 
+                        }">
+                            <div v-for="lIdx in block.lines" :key="lIdx" class="break-inside-avoid">
+                                <div v-if="isTagLine(lIdx)" class="tag-label no-uppercase py-2" style="font-size: 0.85em;">{{ processedLines[lIdx][0] }}</div>
+                                <div v-else class="flex flex-wrap items-end" :style="{ paddingTop: (Math.max(0, styles.chordHeight) + 0.3) + 'em' }">
                                     <span v-for="(item, iIdx) in processedLines[lIdx]" :key="iIdx" class="chord-marker" style="height: auto;">
                                         <span class="chord-name no-uppercase" v-if="getChordAt(lIdx, iIdx)" :style="{ fontSize: styles.chordSize + 'px', top: '-' + styles.chordHeight + 'em', color: styles.chordColor }">{{ getChordAt(lIdx, iIdx).name }}</span>
                                         <template v-if="item === '|'"><span class="bar-line" :style="{ height: '0.8em', margin: '0 0.4em' }"></span></template>
-                                        <template v-else><span class="lyric-item" :style="{ fontSize: '1em', lineHeight: '1.2' }">{{ item === ' ' ? '&nbsp;&nbsp;' : item }}</span></template>
+                                        <template v-else><span class="lyric-item" :style="{ fontSize: '1em' }">{{ item === ' ' ? '&nbsp;&nbsp;' : item }}</span></template>
                                     </span>
                                 </div>
                             </div>
@@ -374,13 +384,18 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div v-else class="lyrics-columns" :style="{ gridTemplateColumns: `repeat(${styles.columns}, minmax(0, 1fr))` }">
-                                    <div v-for="lIdx in block.lines" :key="lIdx" class="break-inside-avoid" :style="{ marginBottom: (styles.lineHeight - 0.7) + 'em' }">
-                                        <div class="flex flex-wrap items-end" :style="{ paddingTop: (Math.max(0, styles.chordHeight) + 0.3) + 'em' }">
+                                <div class="lyrics-columns" :style="{ 
+                                    gridTemplateColumns: `repeat(${styles.columns}, minmax(0, 1fr))`, 
+                                    rowGap: (parseFloat(styles.lineHeight) - 1) + 'em',
+                                    lineHeight: Math.max(0.5, styles.lineHeight)
+                                }">
+                                    <div v-for="lIdx in block.lines" :key="lIdx" class="break-inside-avoid">
+                                        <div v-if="isTagLine(lIdx)" class="tag-label no-uppercase py-2" style="font-size: 0.85em;">{{ processedLines[lIdx][0] }}</div>
+                                        <div v-else class="flex flex-wrap items-end" :style="{ paddingTop: (Math.max(0, styles.chordHeight) + 0.3) + 'em' }">
                                             <span v-for="(item, iIdx) in processedLines[lIdx]" :key="iIdx" class="chord-marker" style="height: auto;">
                                                 <span class="chord-name no-uppercase" v-if="getChordAt(lIdx, iIdx)" :style="{ fontSize: styles.chordSize + 'px', top: '-' + styles.chordHeight + 'em', color: styles.chordColor }">{{ getChordAt(lIdx, iIdx).name }}</span>
                                                 <template v-if="item === '|'"><span class="bar-line" style="height: 0.8em; margin: 0 0.4em;"></span></template>
-                                                <template v-else><span class="lyric-item" style="font-size: 1em; line-height: 1.2;">{{ item === ' ' ? '&nbsp;&nbsp;' : item }}</span></template>
+                                                <template v-else><span class="lyric-item" style="font-size: 1em;">{{ item === ' ' ? '&nbsp;&nbsp;' : item }}</span></template>
                                             </span>
                                         </div>
                                     </div>
@@ -473,7 +488,7 @@
             const tensions = ["b5", "#5", "b9", "9", "#9", "11", "#11", "13"];
             const activeEditor = ref(false);
             const currentEditorPos = reactive({ line: 0, item: 0, isInst: false });
-            const tempChord = reactive({ root: "C", suffix: "", ext: [], bass: "" }); // 新增 bass 屬性
+            const tempChord = reactive({ root: "C", suffix: "", ext: [], bass: "" });
 
             const formattedSuffix = computed(() => {
                 let s = tempChord.suffix;
@@ -529,7 +544,7 @@
                 step.value = 2;
             };
             const exportToJson = () => {
-                const data = { songInfo: { ...songInfo }, rawLyrics: rawLyrics.value, chords: [...chords.value], styles: { ...styles }, lineBeatConfig: { ...lineBeatConfig }, originalKey: originalKey.value, orientation: orientation.value, version: "1.1" };
+                const data = { songInfo: { ...songInfo }, rawLyrics: rawLyrics.value, chords: [...chords.value], styles: { ...styles }, lineBeatConfig: { ...lineBeatConfig }, originalKey: originalKey.value, orientation: orientation.value, version: "1.5" };
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement("a");
@@ -556,48 +571,35 @@
                 reader.readAsText(file);
             };
             const getChordAt = (l, i) => chords.value.find(ch => ch.line === l && ch.item === i);
-            
-            // 更新：解析現有和弦字串以還原編輯器狀態（含 Slash Chord）
             const openChordEditor = (l, i, isInst = false) => { 
+                // 防止在標記區點擊標籤文字進行標記
+                if (!isInst && isTagLine(l)) return;
+
                 currentEditorPos.line = l; currentEditorPos.item = i; currentEditorPos.isInst = isInst;
                 const existing = getChordAt(l, i);
                 if (existing) {
                     let name = existing.name;
-                    // 先拆解 Slash
                     if (name.includes('/')) {
-                        const parts = name.split('/');
-                        name = parts[0];
-                        tempChord.bass = parts[1];
-                    } else {
-                        tempChord.bass = "";
-                    }
-
+                        const parts = name.split('/'); name = parts[0]; tempChord.bass = parts[1];
+                    } else { tempChord.bass = ""; }
                     const rootMatch = name.match(/^[A-G][#b]?/);
                     if (rootMatch) { 
                         tempChord.root = rootMatch[0]; 
                         let rem = name.replace(tempChord.root, "");
                         if (rem.startsWith("M") && /\d/.test(rem)) {
-                            tempChord.suffix = "";
-                            tempChord.ext = [rem.replace("M", "")];
-                        } else {
-                            tempChord.suffix = rem; tempChord.ext = [];
-                        }
+                            tempChord.suffix = ""; tempChord.ext = [rem.replace("M", "")];
+                        } else { tempChord.suffix = rem; tempChord.ext = []; }
                     }
-                } else { 
-                    tempChord.root = "C"; tempChord.suffix = ""; tempChord.ext = []; tempChord.bass = ""; 
-                }
+                } else { tempChord.root = "C"; tempChord.suffix = ""; tempChord.ext = []; tempChord.bass = ""; }
                 activeEditor.value = true; 
             };
-
             const saveChord = () => {
                 let name = tempChord.root + formattedSuffix.value;
                 if (tempChord.bass) name += "/" + tempChord.bass;
-                
                 const idx = chords.value.findIndex(ch => ch.line === currentEditorPos.line && ch.item === currentEditorPos.item);
                 if (idx > -1) chords.value[idx].name = name; else chords.value.push({ ...currentEditorPos, name });
                 activeEditor.value = false;
             };
-
             const deleteChord = () => {
                 const idx = chords.value.findIndex(ch => ch.line === currentEditorPos.line && ch.item === currentEditorPos.item);
                 if (idx > -1) chords.value.splice(idx, 1);
@@ -611,13 +613,8 @@
                     return scale[(idx + semitones + 12) % 12];
                 };
                 const transposeName = (name) => {
-                    // 處理 Slash Chord
-                    if (name.includes('/')) {
-                        return name.split('/').map(part => {
-                            return part.replace(/^([A-G][#b]?)/, (match, root) => transposeSingle(root));
-                        }).join('/');
-                    }
-                    return name.replace(/^([A-G][#b]?)/, (match, root) => transposeSingle(root));
+                    if (name.includes('/')) { return name.split('/').map(p => p.replace(/^([A-G][#b]?)/, (m, r) => transposeSingle(r))).join('/'); }
+                    return name.replace(/^([A-G][#b]?)/, (m, r) => transposeSingle(r));
                 };
                 chords.value = chords.value.map(ch => ({ ...ch, name: transposeName(ch.name) }));
                 originalKey.value = transposeName(originalKey.value);
