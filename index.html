@@ -176,7 +176,7 @@
             <div class="flex flex-wrap gap-2">
                 <button v-for="tag in ['[Intro]', '[Interlude]', '[Outro]', '[Solo]', '[Chorus]', '[Verse]']" @click="insertTag(tag)" class="px-3 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-600 transition">{{ tag }}</button>
             </div>
-            <textarea v-model="rawLyrics" ref="lyricTextarea" placeholder="請輸入歌詞..." class="w-full h-80 p-4 bg-slate-50 border rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed mono text-sm md:text-base"></textarea>
+            <textarea v-model="rawLyrics" ref="lyricTextarea" placeholder="請輸入歌詞，演奏區塊請以[]標示(如[Intro])" class="w-full h-80 p-4 bg-slate-50 border rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed mono text-sm md:text-base"></textarea>
             <button @click="proceedToStep2" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-xl hover:bg-blue-700 transition">開始標記和弦</button>
         </div>
     </div>
@@ -244,7 +244,7 @@
                             <button @click="orientation = 'landscape'" :class="['py-2 rounded-lg text-xs font-bold border', orientation === 'landscape' ? 'bg-slate-800 text-white' : 'bg-white']">橫式</button>
                         </div>
                         <div>
-                            <span class="text-[10px] font-black text-slate-400 uppercase mb-2 block">欄位 (電腦版)</span>
+                            <span class="text-[10px] font-black text-slate-400 uppercase mb-2 block">欄數</span>
                             <div class="grid grid-cols-4 gap-1">
                                 <button v-for="c in [1, 2, 3, 4]" @click="styles.columns = c" :class="['py-2 rounded-lg text-[10px] font-bold border', styles.columns === c ? 'bg-blue-600 text-white' : 'bg-white']">{{ c }}</button>
                             </div>
@@ -283,7 +283,7 @@
                 <div class="pt-4 border-t space-y-3">
                     <button @click="triggerFullPreview" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black shadow-lg hover:bg-blue-700 transition text-lg uppercase tracking-widest">預覽模式</button>
                     <div class="grid grid-cols-2 gap-2">
-                        <button @click="step = 1" class="py-3 bg-slate-100 text-slate-600 rounded-xl font-bold text-xs">返回輸入</button>
+                        <button @click="step = 1" class="py-3 bg-slate-100 text-slate-600 rounded-xl font-bold text-xs">返回歌詞</button>
                         <button @click="step = 2" class="py-3 bg-slate-100 text-slate-600 rounded-xl font-bold text-xs">返回標記</button>
                     </div>
                 </div>
@@ -424,7 +424,7 @@
                     </div>
                 </div>
                 <div class="space-y-2">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Bass</span>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">根音轉換</span>
                     <div class="flex flex-wrap gap-1">
                         <button @click="tempChord.bass = ''" :class="['px-3 py-1.5 rounded-lg border text-[10px] font-bold transition', tempChord.bass === '' ? 'bg-emerald-600 text-white' : 'bg-white hover:border-slate-400']">無</button>
                         <button v-for="r in roots" @click="tempChord.bass = r" :class="['px-2 py-1.5 min-w-[2.5rem] rounded-lg border text-[10px] font-bold no-uppercase transition', tempChord.bass === r ? 'bg-emerald-600 text-white' : 'bg-white hover:border-slate-400']">{{ r }}</button>
@@ -435,7 +435,7 @@
                 </div>
                 <div class="flex gap-4 pt-2">
                     <button @click="deleteChord" class="flex-1 py-4 bg-red-50 text-red-600 rounded-2xl font-bold hover:bg-red-100 transition">刪除</button>
-                    <button @click="saveChord" class="flex-[2] py-4 bg-blue-600 text-white rounded-2xl font-black shadow-xl hover:bg-blue-700 transition">確認插入</button>
+                    <button @click="saveChord" class="flex-[2] py-4 bg-blue-600 text-white rounded-2xl font-black shadow-xl hover:bg-blue-700 transition">插入和弦</button>
                 </div>
             </div>
         </div>
